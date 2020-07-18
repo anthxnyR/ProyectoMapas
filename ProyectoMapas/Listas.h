@@ -12,7 +12,7 @@ typedef struct Camino{
     char Name[100];
     float Peso[3];
     int num;
-    struct Rutas *Next;
+    struct Camino *Next;
     struct Lugares *Ady, *Og;
 }
 
