@@ -1,0 +1,10 @@
+Lugares
+
+UCAB
+Casita
+Farmacia
+Hospital
+
+Rutas
+Ruta_A -> UCAB : Casita = P : 1.0 ; B : 0.5 ; C : 0.2
+Ruta_402 -> UCAB : Farmacia = P : 5.0 ; B : 2.5 ; C : 1.0

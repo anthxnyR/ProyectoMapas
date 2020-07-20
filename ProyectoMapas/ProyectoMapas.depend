@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1595222719 source:/home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"Listas.h"
+
+1595222583 /home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/Listas.h
+

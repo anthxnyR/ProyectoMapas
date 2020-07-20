@@ -3,64 +3,75 @@
 #include <string.h>
 #include "Listas.h"
 
-void RemoveBlanks(char *str){
+
+void RemoveBlanks (char *str){
     char straux[strlen(str)];
     int i=0,j=0;
     while(str[i]!='\0'){
-        if(!str[i]==' '){
+        if(!(str[i]==' ')){
             straux[j] = str[i];
             j++;
         }
         i++;
     }
-    straux[j]='\0';
+    straux[j-1]='\0';
     strcpy(str,straux);
 }
 
 int ValidarTxt(char namefile[]){ //no se si esta parte sea la mejor forma de leer
     FILE *archivo=NULL;
-    char str[1000];
-    char array_str[1000]={" "};
+    int flag=2;
+    char str[100];
     archivo=fopen(namefile,"r");
     Lugares *places=NULL;
     Camino *camino=NULL;
 
 
-    while(!feof((archivo))){
+    while(!feof(archivo)){
         fgets(str,100,archivo);
         RemoveBlanks(str);
-        if(strcmp(str,"Lugares")){
-            fgets(str,100,archivo);
-            while(str!="Rutas"||!feof(archivo)){
-                RemoveBlanks(str);
-                places=InsertLugar(places,LugarNuevo(str));
-                fgets(str,100,archivo);
+        printf("%s\n",str);
+        if(strlen(str)>1){
+            if(strcmp(str,"Lugares")==0){
+                printf("Encontre!\n");
+                flag=1;
             }
-            if(strcmp(str,"Rutas")){
-                fgets(str,100,archivo);
-                while(!feof(archivo)){
-                    RemoveBlanks(str);
-                }
+            if(strcmp(str,"Rutas")==0){
+                printf("x2\n");
+                flag=0;
+            }
+
+            if(flag==1){
+                if(strcmp(str,"Lugares")!=0 && strlen(str)>1)
+                    places=InsertLugar(places,LugarNuevo(str));
             }
         }
 
     }
+    printf("\n\nLugares:\n");
+    Imprimir(places);
+    return 0;
 }
 
 int main(){
     char namefile[100];
 
 
-    printf("Ingrese el nombre del archivo\n");
-    scanf("%s",namefile);
-    if(!strstr(namefile,".txt"))
-        strcat(path,".txt");
     FILE *fp=NULL;
+    printf("\nIngrese el documento a agregar\n");
+    scanf("%s",namefile);
     fp=fopen(namefile,"r");
     if(fp==NULL){
-        printf("ARCHIVO NO ENCONTRADO!\n");
-        return 0;
-    }else fclose(fp);
+        if(!strstr(namefile,".txt")){
+            strcat(namefile,".txt");
+            fp=fopen(namefile,"r");
+            if(fp==NULL){
+                printf("\nARCHIVO NO ENCONTRADO!\n");
+                return 0;
+            }
+            else fclose(fp);
+        }
+    }
 
     ValidarTxt(namefile);
 
