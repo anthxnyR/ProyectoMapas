@@ -68,61 +68,105 @@ Camino *CaminoNuevo(char str[],float P, float B, float C){
 }
 
 Lugares *BuscarLugar(char str[], Lugares *Mapa){
-    Lugares *Aux=Mapa;
-    while(Aux){
-        if(strcmp(Aux->Name,str)==0) return Aux;
-        Aux=Aux->Next;
+    while(Mapa){
+        if(strcmp(Mapa->Name,str)==0) return Mapa;
+        Mapa=Mapa->Next;
     }
     return NULL;
 }
 
 void *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa){
-    Lugares *AuxOrigen, *AuxDestino;
-    AuxOrigen=BuscarLugar(Origen,Mapa);
-    AuxDestino=BuscarLugar(Destino,Mapa);
+    Lugares *LOrigen, *LDestino,*Aux;
+    LOrigen=BuscarLugar(Origen,Mapa);
+    LDestino=BuscarLugar(Destino,Mapa);
+    Aux=LOrigen->Ady;
 
-    if(AuxOrigen->Ady==NULL){
-        AuxOrigen->Ady=newCamino;
-        newCamino->Og=AuxOrigen;
-        newCamino->Ady=AuxDestino;
-        return;
-    }else{
-        while(AuxOrigen->Next){
-            newCamino->Ady=AuxDestino;
-            AuxOrigen->Next=newCamino;
-            newCamino->Og=AuxOrigen;
-            AuxOrigen=AuxOrigen->Next;
-        }
+    if(LOrigen->Ady==NULL){
+        LOrigen->Ady=newCamino;
+        newCamino->Og=LOrigen;
+        newCamino->Ady=LDestino;
         return;
     }
+    else{
+        printf("%s\nxd\n",Aux->Name);
+        if(Aux->Next==NULL){
 
+            newCamino->Ady=LDestino;
+            newCamino->Og=LOrigen;
+            Aux->Next=newCamino;
+            return;
+        }
+    }
 }
 
-/*void LeerRuta(char str[], Lugares *Mapa){
-    Camino *path=NULL;
-    char *Nombre,*Origen,*Dest,*num;
-    float P,B,C;
+void DeleteChar(char str[],char const delim){
+    int i;
+    for(i=0;str[i]!=delim;i++){
+        str[i]=' ';
+    }
+    str[i]=' ';
+    RemoveBlanks(str);
+    return;
+}
 
-    if(strcpy(Nombre,strtok(str,"->"))){
-        if(strcpy(Origen,strtok(str,":"))){
-            if(strcpy(Dest,strtok(str,"="))){
-                if(strtok(str,":")=="P"){
-                    if(strcpy(num,strtok(str,";"))<58 && num>47)
-                        P=atof(num);
-                    if(strtok(str,":")=="B"){
-                        if(strcpy(num,strtok(str,";"))<58 && num>47)
-                            B=atof(num);
-                        if(strtok(str,":")=="C"){
-                            if(strcpy(num,strtok(str,";"))<58 && num>47)
-                                C=atof(num);
-                        }
-                    }
-                }
-            }
+void LeerRuta(char str[], Lugares *Mapa){
+    Camino *path=NULL;
+    char Nombre[100],Origen[100],Dest[100],num;
+    char str_aux[100];
+    float P,B,C;
+    strcpy(str_aux,str);
+
+    strtok(str_aux,"->");
+    strcpy(Nombre,str_aux);
+    DeleteChar(str,'>');
+    strcpy(str_aux,str);
+
+    strtok(str_aux,":");
+    strcpy(Origen,str_aux);
+    DeleteChar(str,':');
+    strcpy(str_aux,str);
+
+    strtok(str_aux,"=");
+    strcpy(Dest,str_aux);
+    DeleteChar(str,'=');
+    strcpy(str_aux,str);
+
+    int i=0;
+    while(i<3){
+        strtok(str_aux,":");
+        num=str_aux[0];
+        switch(num){
+            case 'P':
+                DeleteChar(str,':');
+                strcpy(str_aux,str);
+                strtok(str_aux,";");
+                P=atof(str_aux);
+                DeleteChar(str,';');
+                strcpy(str_aux,str);
+                i++;
+                break;
+
+            case 'B':
+                DeleteChar(str,':');
+                strcpy(str_aux,str);
+                strtok(str_aux,";");
+                B=atof(str_aux);
+                DeleteChar(str,';');
+                strcpy(str_aux,str);
+                i++;
+                break;
+
+            case 'C':
+                DeleteChar(str,':');
+                C=atof(str);
+                i++;
+                break;
         }
     }
-    path=CaminoNuevo(Nombre,P,B,C);
-    AddCamino(path,Origen,Dest,Mapa);
-}*/
+
+    AddCamino(CaminoNuevo(Nombre,P,B,C),Origen,Dest,Mapa);
+    return;
+
+}
 
 #endif // LISTAS_H_INCLUDED

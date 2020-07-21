@@ -14,11 +14,14 @@ void RemoveBlanks (char *str){
         }
         i++;
     }
-    straux[j-1]='\0';
+    if(straux[j-1]=='\n')
+        straux[j-1]='\0';
+    else straux[j]='\0';
     strcpy(str,straux);
 }
 
-int ValidarTxt(char namefile[]){ //no se si esta parte sea la mejor forma de leer
+
+int LeerTxt(char namefile[]){
     FILE *archivo=NULL;
     int flag=2;
     char str[100];
@@ -45,11 +48,18 @@ int ValidarTxt(char namefile[]){ //no se si esta parte sea la mejor forma de lee
                 if(strcmp(str,"Lugares")!=0 && strlen(str)>1)
                     places=InsertLugar(places,LugarNuevo(str));
             }
+
+            if(flag==0){
+                if(strcmp(str,"Rutas")!=0 && strlen(str)>1)
+                    LeerRuta(str,places);
+            }
+
         }
 
     }
     printf("\n\nLugares:\n");
     Imprimir(places);
+
     return 0;
 }
 
@@ -73,6 +83,6 @@ int main(){
         }
     }
 
-    ValidarTxt(namefile);
+    LeerTxt(namefile);
 
 }
