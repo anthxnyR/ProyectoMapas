@@ -4,7 +4,7 @@
 typedef struct Lugares{
     char Name[100];
     struct Lugares *Next;
-    struct Camino *Ady;
+    //struct Camino *Ady; creo que no es necesario.
 }Lugares;
 
 typedef struct Camino{
@@ -28,7 +28,6 @@ Lugares *LugarNuevo(char str[]){
     }else{
         strcpy(NewLugar->Name,str);
         NewLugar->Next=NULL;
-        NewLugar->Ady=NULL;
     }
     return NewLugar;
 }
@@ -42,10 +41,17 @@ Lugares *InsertLugar(Lugares *Map, Lugares *NewLugar){
     return Map;
 }
 
-void Imprimir(Lugares *Map){
+void ImprimirLugares(Lugares *Map){
     while(Map!=NULL){
         printf("%s\n",Map->Name);
         Map=Map->Next;
+    }
+}
+
+void ImprimirRuta(Camino *path){
+    while(path!=NULL){
+        printf("%s->%s:%s=P:%.1f;B:%.1f;C:%.1f\n",path->Name,path->Og->Name,path->Ady->Name,path->Peso[0],path->Peso[1],path->Peso[2]);
+        path=path->Next;
     }
 }
 
@@ -75,28 +81,22 @@ Lugares *BuscarLugar(char str[], Lugares *Mapa){
     return NULL;
 }
 
-void *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa){
-    Lugares *LOrigen, *LDestino,*Aux;
+Camino *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa,Camino *path){
+    Lugares *LOrigen, *LDestino;
     LOrigen=BuscarLugar(Origen,Mapa);
     LDestino=BuscarLugar(Destino,Mapa);
-    Aux=LOrigen->Ady;
 
-    if(LOrigen->Ady==NULL){
-        LOrigen->Ady=newCamino;
-        newCamino->Og=LOrigen;
-        newCamino->Ady=LDestino;
-        return;
+    if(path==NULL){
+        path=newCamino;
+    }else{
+        while(path->Next) path=path->Next;
+        path->Next=newCamino;
     }
-    else{
-        printf("%s\nxd\n",Aux->Name);
-        if(Aux->Next==NULL){
 
-            newCamino->Ady=LDestino;
-            newCamino->Og=LOrigen;
-            Aux->Next=newCamino;
-            return;
-        }
-    }
+    newCamino->Og=LOrigen;
+    newCamino->Ady=LDestino;
+    return path;
+
 }
 
 void DeleteChar(char str[],char const delim){
@@ -109,8 +109,7 @@ void DeleteChar(char str[],char const delim){
     return;
 }
 
-void LeerRuta(char str[], Lugares *Mapa){
-    Camino *path=NULL;
+Camino *LeerRuta(char str[], Lugares *Mapa, Camino *path){
     char Nombre[100],Origen[100],Dest[100],num;
     char str_aux[100];
     float P,B,C;
@@ -164,8 +163,8 @@ void LeerRuta(char str[], Lugares *Mapa){
         }
     }
 
-    AddCamino(CaminoNuevo(Nombre,P,B,C),Origen,Dest,Mapa);
-    return;
+    path=AddCamino(CaminoNuevo(Nombre,P,B,C),Origen,Dest,Mapa,path);
+    return path;
 
 }
 

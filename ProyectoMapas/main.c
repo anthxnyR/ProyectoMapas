@@ -27,7 +27,7 @@ int LeerTxt(char namefile[]){
     char str[100];
     archivo=fopen(namefile,"r");
     Lugares *places=NULL;
-    Camino *camino=NULL;
+    Camino *path=NULL;
 
 
     while(!feof(archivo)){
@@ -51,14 +51,16 @@ int LeerTxt(char namefile[]){
 
             if(flag==0){
                 if(strcmp(str,"Rutas")!=0 && strlen(str)>1)
-                    LeerRuta(str,places);
+                    path=LeerRuta(str,places,path);
             }
 
         }
 
     }
     printf("\n\nLugares:\n");
-    Imprimir(places);
+    ImprimirLugares(places);
+    printf("\n\nRutas:\n");
+    ImprimirRuta(path);
 
     return 0;
 }
