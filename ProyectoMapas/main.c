@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "Listas.h"
 
 
@@ -20,6 +21,76 @@ void RemoveBlanks (char *str){
     strcpy(str,straux);
 }
 
+void CambioClima(Camino *path,float P,float B,float C,char name[]){
+    if(path==NULL) return;
+    for(;path;path=path->Next){
+        if(strcmp(path->Name,name)==0){
+            path->Peso[0]=path->Peso[0]*P;
+            path->Peso[1]=path->Peso[1]*B;
+            path->Peso[2]=path->Peso[2]*C;
+        }
+    }
+}
+
+int PasarClima(char str[], Camino *path){
+    char str_aux[100],nombre[100],num;
+    float P,B,C;
+    strcpy(str_aux,str);
+
+    strtok(str_aux,"=");
+    strcpy(nombre,str_aux);
+    DeleteChar(str,'=');
+    strcpy(str_aux,str);
+
+    int i=0;
+    while(i<3){
+        strtok(str_aux,":");
+        num=str_aux[0];
+        switch(num){
+            case 'P':
+                DeleteChar(str,':');
+                strcpy(str_aux,str);
+                strtok(str_aux,";");
+                P=atof(str_aux);
+                DeleteChar(str,';');
+                strcpy(str_aux,str);
+                i++;
+                break;
+
+            case 'B':
+                DeleteChar(str,':');
+                strcpy(str_aux,str);
+                strtok(str_aux,";");
+                B=atof(str_aux);
+                DeleteChar(str,';');
+                strcpy(str_aux,str);
+                i++;
+                break;
+
+            case 'C':
+                DeleteChar(str,':');
+                C=atof(str);
+                i++;
+                break;
+        }
+    }
+    CambioClima(path,P,B,C,nombre);
+
+}
+
+int LeerClima(char namefile[], Camino *path){
+    FILE *archivo=NULL;
+    char str[100];
+    archivo=fopen(namefile,"r");
+
+    while(!feof(archivo)){
+        fgets(str,100,archivo);
+        RemoveBlanks(str);
+        if(strlen(str)>1)
+            PasarClima(str,path);
+    }
+    return 0;
+}
 
 int LeerTxt(char namefile[]){
     FILE *archivo=NULL;
@@ -33,14 +104,11 @@ int LeerTxt(char namefile[]){
     while(!feof(archivo)){
         fgets(str,100,archivo);
         RemoveBlanks(str);
-        printf("%s\n",str);
         if(strlen(str)>1){
             if(strcmp(str,"Lugares")==0){
-                printf("Encontre!\n");
                 flag=1;
             }
             if(strcmp(str,"Rutas")==0){
-                printf("x2\n");
                 flag=0;
             }
 
@@ -57,6 +125,27 @@ int LeerTxt(char namefile[]){
         }
 
     }
+    fclose(archivo);
+    char *option,nameclima[50];
+    printf("\nDesea ingresar un archivo de clima? (Y/N)\n");
+    scanf(" %c",&option);
+    if(toupper(option)=='Y'){
+        printf("Ingrese el archivo que desea leer\n");
+        scanf("%s",nameclima);
+        archivo=fopen(nameclima,"r");
+        if(archivo==NULL){
+            if(!strstr(nameclima,".txt")){
+                strcat(nameclima,".txt");
+                archivo=fopen(nameclima,"r");
+                if(archivo==NULL){
+                    printf("\nARCHIVO NO ENCONTRADO!\n");
+                    return 0;
+                }
+                else fclose(archivo);
+            }
+        }
+    }
+    LeerClima(nameclima,path);
     printf("\n\nLugares:\n");
     ImprimirLugares(places);
     printf("\n\nRutas:\n");
@@ -71,7 +160,7 @@ int main(){
 
     FILE *fp=NULL;
     printf("\nIngrese el documento a agregar\n");
-    scanf("%s",namefile);
+    scanf("\n%s",namefile);
     fp=fopen(namefile,"r");
     if(fp==NULL){
         if(!strstr(namefile,".txt")){
@@ -84,7 +173,6 @@ int main(){
             else fclose(fp);
         }
     }
-
     LeerTxt(namefile);
 
 }
