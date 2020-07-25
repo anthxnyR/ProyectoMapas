@@ -82,15 +82,16 @@ Lugares *BuscarLugar(char str[], Lugares *Mapa){
 }
 
 Camino *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa,Camino *path){
+    Camino *aux=path;
     Lugares *LOrigen, *LDestino;
     LOrigen=BuscarLugar(Origen,Mapa);
     LDestino=BuscarLugar(Destino,Mapa);
 
-    if(path==NULL){
+    if(aux==NULL){
         path=newCamino;
     }else{
-        while(path->Next) path=path->Next;
-        path->Next=newCamino;
+        while(aux->Next) aux=aux->Next;
+        aux->Next=newCamino;
     }
 
     newCamino->Og=LOrigen;

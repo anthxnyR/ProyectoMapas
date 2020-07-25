@@ -4,7 +4,11 @@ UCAB
 Casita
 Farmacia
 Hospital
+Loyola
+Hotel
 
 Rutas
 Ruta_A -> UCAB : Casita = P : 1.0 ; B : 0.5 ; C : 0.2
 Ruta_402 -> UCAB : Farmacia = P : 5.0 ; B : 2.5 ; C : 1.0
+Ruta_Pirineos -> Farmacia : Loyola = P: 2.0 ; B: 1.5 ; C: 0.5
+Ruta_Saltadilla -> Loyola : Hotel = P: 2.0 ; B: 1.5 ; C: 0.5

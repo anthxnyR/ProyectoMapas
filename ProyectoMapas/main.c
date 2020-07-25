@@ -92,16 +92,121 @@ int LeerClima(char namefile[], Camino *path){
     return 0;
 }
 
-int LeerTxt(char namefile[]){
+int StartApp(){
+    char namefile[100],Origen[50],Destino[50];
+    int option;
     FILE *archivo=NULL;
     int flag=2;
     char str[100];
-    archivo=fopen(namefile,"r");
     Lugares *places=NULL;
     Camino *path=NULL;
 
+    printf("*********BIENVENIDO A AYPII MAPS*********\n\n");
+    while(option!=3){
+        printf("Ingrese la opcion que desee:\n\n");
+        printf("[1] Agregar un Mapa\n");
+        printf("[2] Consultar una ruta\n");
+        printf("[3] Salir del Programa\n\n");
+        scanf("  %i",&option);
+        switch(option){
+            case 1:
+                system("clear");
+                printf("\nIngrese el documento a agregar\n");
+                scanf("\n%s",namefile);
+                archivo=fopen(namefile,"r");
+                if(archivo==NULL){
+                    if(!strstr(namefile,".txt")){
+                        strcat(namefile,".txt");
+                        archivo=fopen(namefile,"r");
+                        if(archivo==NULL){
+                            printf("\nARCHIVO NO ENCONTRADO!\n");
+                            return 0;
+                        }
+                        else fclose(archivo);
+                    }
+                }
+                archivo=fopen(namefile,"r");
+                while(!feof(archivo)){
+                    fgets(str,100,archivo);
+                    RemoveBlanks(str);
+                    if(strlen(str)>1){
+                        if(strcmp(str,"Lugares")==0){
+                            flag=1;
+                        }
+                        if(strcmp(str,"Rutas")==0){
+                            flag=0;
+                        }
 
-    while(!feof(archivo)){
+                        if(flag==1){
+                            if(strcmp(str,"Lugares")!=0 && strlen(str)>1)
+                            places=InsertLugar(places,LugarNuevo(str));
+                        }
+
+                        if(flag==0){
+                            if(strcmp(str,"Rutas")!=0 && strlen(str)>1)
+                                path=LeerRuta(str,places,path);
+                        }
+
+                    }
+
+                }
+                fclose(archivo);
+                char *option,nameclima[50];
+                printf("\nDesea ingresar un archivo de clima? (Y/N)\n");
+                scanf("\n%c",&option);
+                if(toupper(option)=='Y'){
+                    printf("Ingrese el archivo que desea leer\n");
+                    scanf("\n%s",nameclima);
+                    archivo=fopen(nameclima,"r");
+                    if(archivo==NULL){
+                        if(!strstr(nameclima,".txt")){
+                            strcat(nameclima,".txt");
+                            archivo=fopen(nameclima,"r");
+                            if(archivo==NULL){
+                                printf("\nARCHIVO NO ENCONTRADO!\n");
+                                return 0;
+                            }
+                            else fclose(archivo);
+                        }
+
+                    }
+                    LeerClima(nameclima,path);
+                    getchar();
+                }else if(toupper(option)=='N'){
+                    getchar();
+                }
+                printf("\nDocumento agregado con exito!\n");
+                ImprimirLugares(places);
+                printf("\n");
+                ImprimirRuta(path);
+                printf("\nPulse Enter para continuar\n");
+                printf("\n");
+                getchar();
+                system("clear");
+                break;
+            case 2:
+                system("clear");
+                printf("Ingrese la ruta que desea consultar\n");
+                printf("Origen: ");
+                scanf(" %s",Origen);
+                printf("Destino: ");
+                scanf(" %s",Destino);
+                //BuscarRutaOptima(path,Origen,Destino);
+                printf("\n");
+                getchar();
+                getchar( );
+                system("clear");
+                break;
+            case 3:
+                system("clear");
+                printf("   ***GRACIAS POR PREFERIRNOS***\nVuelva pronto y maneje con cuidado!\n\n");
+                getchar( );
+                break;
+        }
+    }
+
+
+    /*while(!feof(archivo)){
         fgets(str,100,archivo);
         RemoveBlanks(str);
         if(strlen(str)>1){
@@ -143,23 +248,22 @@ int LeerTxt(char namefile[]){
                 }
                 else fclose(archivo);
             }
-        }
-    }
-    LeerClima(nameclima,path);
-    printf("\n\nLugares:\n");
-    ImprimirLugares(places);
-    printf("\n\nRutas:\n");
-    ImprimirRuta(path);
 
-    return 0;
+        }
+        LeerClima(nameclima,path);
+    }else if(toupper(option)=='N'){
+        getchar();
+    }
+    return 0;*/
 }
 
 int main(){
-    char namefile[100];
 
 
-    FILE *fp=NULL;
-    printf("\nIngrese el documento a agregar\n");
+      //  }
+    //}
+
+    /*printf("\nIngrese el documento a agregar\n");
     scanf("\n%s",namefile);
     fp=fopen(namefile,"r");
     if(fp==NULL){
@@ -172,7 +276,6 @@ int main(){
             }
             else fclose(fp);
         }
-    }
-    LeerTxt(namefile);
-
+    }*/
+    StartApp();
 }
