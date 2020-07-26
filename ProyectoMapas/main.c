@@ -89,6 +89,7 @@ int LeerClima(char namefile[], Camino *path){
         if(strlen(str)>1)
             PasarClima(str,path);
     }
+    fclose(archivo);
     return 0;
 }
 
@@ -125,6 +126,8 @@ int StartApp(){
                         else fclose(archivo);
                     }
                 }
+                path=FreeCamino(path);
+                places=FreeLugares(places);
                 archivo=fopen(namefile,"r");
                 while(!feof(archivo)){
                     fgets(str,100,archivo);
@@ -199,6 +202,8 @@ int StartApp(){
                 break;
             case 3:
                 system("clear");
+                places=FreeLugares(places);
+                path=FreeCamino(path);
                 printf("   ***GRACIAS POR PREFERIRNOS***\nVuelva pronto y maneje con cuidado!\n\n");
                 getchar( );
                 break;

@@ -32,6 +32,24 @@ Lugares *LugarNuevo(char str[]){
     return NewLugar;
 }
 
+Camino *FreeCamino(Camino *path){
+    Camino *next;
+    for(;path;path=next){
+        next=path->Next;
+        free(path);
+    }
+    return NULL;
+}
+
+Lugares *FreeLugares(Lugares *places){
+    Lugares *next;
+
+    for(;places;places=next){
+        next=places->Next;
+        free(places);
+    }
+    return NULL;
+}
 
 Lugares *InsertLugar(Lugares *Map, Lugares *NewLugar){
     Lugares *ptr;
