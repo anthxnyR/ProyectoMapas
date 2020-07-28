@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "Listas.h"
+#include "Busqueda.h"
 
 
 void RemoveBlanks (char *str){
@@ -194,7 +195,7 @@ int StartApp(){
                 scanf(" %s",Origen);
                 printf("Destino: ");
                 scanf(" %s",Destino);
-                //BuscarRutaOptima(path,Origen,Destino);
+                BuscarRutaOptima(path,Origen,Destino);
                 printf("\n");
                 getchar();
                 getchar( );
