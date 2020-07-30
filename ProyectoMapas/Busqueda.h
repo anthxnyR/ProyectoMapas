@@ -1,71 +1,71 @@
 #ifndef BUSQUEDA_H_INCLUDED
 #define BUSQUEDA_H_INCLUDED
 
-void Yen(Lugares *origin, char Destino[], Camino *roads, float *suma_peso[], int *i, int *j, int num, char *name_road[]){
+void Yen(Lugares *origin, char Destino[], Camino *roads, float *suma_peso, int i, int num, char *name_road[]){
     char *name_road_2[100];
     float aux_peso;
     Lugares *spurNode= origin;
     Lugares *rootPath= origin;
-    
-    analizar_ruta(origin, Destino, roads, suma_peso, &i, &j, num, name_road);
+
+    analizar_ruta(origin, Destino, roads, suma_peso, i, num, name_road);
 
     Camino *aux=roads;
 
     for(; aux; aux=roads->Next){
-        if(strcmp(aux-> Name, name_road[0])== 0){
-            aux_peso= aux->Peso[*i];
-            aux-> Peso[*i]= 0;
+        if(strcmp(aux-> Name, name_road[0])== 0 && aux->Og->num_aristas > 1){
+            aux_peso= aux->Peso[i];
+            aux-> Peso[i]= 0;
         }
     }
-    
-    analizar_ruta(origin, Destino, roads, suma_peso, &i, &j, num, name_road_2);
 
-    aux-> Peso[*i]= aux_peso;
+    analizar_ruta(origin, Destino, roads, suma_peso, i, num, name_road_2);
+
+    aux-> Peso[i]= aux_peso;
 }
 
-void analizar_ruta(Lugares *pos_actual, char Destino[], Camino *roads, float *suma_peso[], int *i, int *j, int num, char *name_road[]){
-    if(strcmp(pos_actual-> Name, Destino)== 0)
+void analizar_ruta(Lugares *pos_actual, char Destino[], Camino *roads, float *suma_peso, int i, int num, char *name_road[]){
+    if(strcmp(pos_actual-> Name, Destino)== 0){
         return;
+    }
 
-    int peso=0;
     Camino *aux_roads= roads;
 
     for(; aux_roads; aux_roads= aux_roads->Next){
-        if(strcmp(aux_roads->Og->Name, pos_actual->Name)== 0 && aux_roads->Peso[*i]!=0 && peso<suma_peso[*i][*j]+aux_roads->Peso[*i]){
-            peso= aux_roads->Peso[*i];
-            strcpy(name_road[num], aux_roads-> Name);
-            pos_actual= aux_roads-> Ady;
+        if(strcmp(aux_roads->Og->Name, pos_actual->Name)== 0 && aux_roads->Peso[i]!=0 && suma_peso[i]<suma_peso[i]+aux_roads->Peso[i]){
+                suma_peso[i]+= aux_roads->Peso[i];
+                strcpy(name_road[num], aux_roads-> Name);
+                pos_actual= aux_roads-> Ady;
         }
     }
-    suma_peso[*i][*j]+= peso;
-
-    analizar_ruta(pos_actual, Destino, roads, suma_peso, i, j, num+1, name_road);
+    num++;
+    analizar_ruta(pos_actual, Destino, roads, suma_peso, i, num, name_road);
 }
 
-void BuscarRutaOptima(Camino *path,char Origen[50], char Destino[50]){
-    int i=1, flag=1, num=0;
-    float peso_final[3][2];
+void BuscarRutaOptima(Camino *path,char Origen[], char Destino[]){
+    int i=1, flag=1;
+    int num=0;
+    float peso_final[3];
     char *name_road[100];
+    Camino *aux= path;
     Lugares *origin;
-    
+
     while(flag==1){
-        if(strcmp(origin->Name, Origen)== 0){
+        if(strcmp(aux->Og->Name, Origen)== 0){
             flag=0;
+            origin= aux->Og;
         } else{
-            origin= origin->Next;
-        } 
+            aux= aux->Next;
+        }
     }
 
     for(int i=0; i<3; i++){
-        for(int j=0; j<2; j++){    
-            peso_final[i][j]=0;
-            //analizar_ruta(origin, Destino, path, peso_final, &i, num, name_road);
-            Yen(origin, Destino, path, peso_final, &i, &j, num, name_road);
-        }
+            peso_final[i]=0;
+            Yen(origin, Destino, path, peso_final, i, num, name_road);
     }
 
     for(int i=0; i<3; i++)
         printf("%f\n", peso_final[i]);
+
 }
 
 #endif // BUSQUEDA_H_INCLUDED

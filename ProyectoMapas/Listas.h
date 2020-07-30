@@ -4,7 +4,7 @@
 typedef struct Lugares{
     char Name[100];
     struct Lugares *Next;
-    //struct Camino *Ady; creo que no es necesario.
+    int num_aristas;
 }Lugares;
 
 typedef struct Camino{
@@ -28,6 +28,7 @@ Lugares *LugarNuevo(char str[]){
     }else{
         strcpy(NewLugar->Name,str);
         NewLugar->Next=NULL;
+        NewLugar->num_aristas=0;
     }
     return NewLugar;
 }
@@ -112,6 +113,7 @@ Camino *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa,
         aux->Next=newCamino;
     }
 
+    LOrigen->num_aristas+= 1;
     newCamino->Og=LOrigen;
     newCamino->Ady=LDestino;
     return path;
