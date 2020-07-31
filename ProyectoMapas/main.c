@@ -195,7 +195,8 @@ int StartApp(){
                 scanf(" %s",Origen);
                 printf("Destino: ");
                 scanf(" %s",Destino);
-                BuscarRutaOptima(path,Origen,Destino);
+                Lugares *vertices;
+                BuscarRutaOptima(path,places,Origen,Destino);
                 printf("\n");
                 getchar();
                 getchar( );

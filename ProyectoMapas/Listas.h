@@ -3,8 +3,10 @@
 
 typedef struct Lugares{
     char Name[100];
+    int status;
+    float suma_peso;
+    struct Camino *ruta_og;
     struct Lugares *Next;
-    int num_aristas;
 }Lugares;
 
 typedef struct Camino{
@@ -16,7 +18,7 @@ typedef struct Camino{
 
 struct Route{
     struct Camino *path;
-    struct Route *next;
+    struct Lugares *next;
 }Route;
 
 
@@ -28,7 +30,8 @@ Lugares *LugarNuevo(char str[]){
     }else{
         strcpy(NewLugar->Name,str);
         NewLugar->Next=NULL;
-        NewLugar->num_aristas=0;
+        NewLugar->status=0;
+        NewLugar->suma_peso=10000;
     }
     return NewLugar;
 }
@@ -113,7 +116,6 @@ Camino *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa,
         aux->Next=newCamino;
     }
 
-    LOrigen->num_aristas+= 1;
     newCamino->Og=LOrigen;
     newCamino->Ady=LDestino;
     return path;
