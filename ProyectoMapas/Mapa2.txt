@@ -17,3 +17,4 @@ Ruta_B -> Clinica : UNEG = P : 3.0 ; B : 0.7 ; C : 1.5
 Ruta_C -> UNEG : UNEXPO = P : 1.5 ; B : 1.0 ; C : 1.6
 Ruta_D -> Hotel : Apartamento = P : 1.0 ; B : 0.5 ; C : 0.2
 Ruta_E -> Apartamento : UNEXPO = P : 3.0 ; B : 1.8 ; C : 2.0
+Ruta_F -> Farmacia : Apartamento = P: 2.5; B: 0.0 ; C: 1.0

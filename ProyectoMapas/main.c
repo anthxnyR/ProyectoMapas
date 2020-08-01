@@ -3,7 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "Listas.h"
-#include "Busqueda.h"
 
 
 void RemoveBlanks (char *str){
@@ -92,6 +91,28 @@ int LeerClima(char namefile[], Camino *path){
     }
     fclose(archivo);
     return 0;
+}
+
+Mapa *BuscarOptimo(Camino *path,char Origen[],char Destino[], Trayecto *tray, Mapa *Map){
+    Camino *aux=path;
+    if(path==NULL) return;
+    for(;aux;aux=aux->Next){
+        if(strcmp(aux->Og->Name,Origen)==0){
+            tray=AddTrayecto(tray,NuevoTrayecto(aux));
+            ImprimirTrayecto(tray);
+            if(strcmp(aux->Ady->Name,Destino)==0){
+                Trayecto *ptr=copylist(tray);
+                ImprimirTrayecto(ptr);
+                Map=AddMapa(Map,NuevoMapa(ptr));
+                ImprimirMapas(Map);
+            }
+            else Map=BuscarOptimo(path,aux->Ady->Name,Destino,tray,Map);
+            tray=DeleteLast(tray);
+            if (tray!=NULL)
+                ImprimirTrayecto(tray);
+        }
+    }
+    return Map;
 }
 
 int StartApp(){
@@ -195,8 +216,10 @@ int StartApp(){
                 scanf(" %s",Origen);
                 printf("Destino: ");
                 scanf(" %s",Destino);
-                Lugares *vertices;
-                BuscarRutaOptima(path,places,Origen,Destino);
+                Trayecto *tray=NULL;
+                Mapa *Map=NULL;
+                Map=BuscarOptimo(path,Origen,Destino,tray,Map);
+                ImprimirMapas(Map);
                 printf("\n");
                 getchar();
                 getchar( );
@@ -211,78 +234,8 @@ int StartApp(){
                 break;
         }
     }
-
-
-    /*while(!feof(archivo)){
-        fgets(str,100,archivo);
-        RemoveBlanks(str);
-        if(strlen(str)>1){
-            if(strcmp(str,"Lugares")==0){
-                flag=1;
-            }
-            if(strcmp(str,"Rutas")==0){
-                flag=0;
-            }
-
-            if(flag==1){
-                if(strcmp(str,"Lugares")!=0 && strlen(str)>1)
-                    places=InsertLugar(places,LugarNuevo(str));
-            }
-
-            if(flag==0){
-                if(strcmp(str,"Rutas")!=0 && strlen(str)>1)
-                    path=LeerRuta(str,places,path);
-            }
-
-        }
-
-    }
-    fclose(archivo);
-    char *option,nameclima[50];
-    printf("\nDesea ingresar un archivo de clima? (Y/N)\n");
-    scanf(" %c",&option);
-    if(toupper(option)=='Y'){
-        printf("Ingrese el archivo que desea leer\n");
-        scanf("%s",nameclima);
-        archivo=fopen(nameclima,"r");
-        if(archivo==NULL){
-            if(!strstr(nameclima,".txt")){
-                strcat(nameclima,".txt");
-                archivo=fopen(nameclima,"r");
-                if(archivo==NULL){
-                    printf("\nARCHIVO NO ENCONTRADO!\n");
-                    return 0;
-                }
-                else fclose(archivo);
-            }
-
-        }
-        LeerClima(nameclima,path);
-    }else if(toupper(option)=='N'){
-        getchar();
-    }
-    return 0;*/
 }
 
 int main(){
-
-
-      //  }
-    //}
-
-    /*printf("\nIngrese el documento a agregar\n");
-    scanf("\n%s",namefile);
-    fp=fopen(namefile,"r");
-    if(fp==NULL){
-        if(!strstr(namefile,".txt")){
-            strcat(namefile,".txt");
-            fp=fopen(namefile,"r");
-            if(fp==NULL){
-                printf("\nARCHIVO NO ENCONTRADO!\n");
-                return 0;
-            }
-            else fclose(fp);
-        }
-    }*/
     StartApp();
 }

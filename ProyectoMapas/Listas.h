@@ -1,26 +1,6 @@
 #ifndef LISTAS_H_INCLUDED
 #define LISTAS_H_INCLUDED
-
-typedef struct Lugares{
-    char Name[100];
-    int status;
-    float suma_peso;
-    struct Camino *ruta_og;
-    struct Lugares *Next;
-}Lugares;
-
-typedef struct Camino{
-    char Name[100];
-    float Peso[3];
-    struct Camino *Next;
-    struct Lugares *Ady, *Og;
-}Camino;
-
-struct Route{
-    struct Camino *path;
-    struct Lugares *next;
-}Route;
-
+#include "JIC2.h"
 
 Lugares *LugarNuevo(char str[]){
     Lugares *NewLugar=(Lugares *)malloc(sizeof(Lugares));
@@ -30,8 +10,6 @@ Lugares *LugarNuevo(char str[]){
     }else{
         strcpy(NewLugar->Name,str);
         NewLugar->Next=NULL;
-        NewLugar->status=0;
-        NewLugar->suma_peso=10000;
     }
     return NewLugar;
 }
@@ -45,6 +23,15 @@ Camino *FreeCamino(Camino *path){
     return NULL;
 }
 
+Trayecto *FreeTrayecto(Trayecto *tray){
+    Trayecto *next;
+    for(;tray;tray=next){
+        next=tray->next;
+        free(tray);
+    }
+    return NULL;
+}
+
 Lugares *FreeLugares(Lugares *places){
     Lugares *next;
 
@@ -53,6 +40,16 @@ Lugares *FreeLugares(Lugares *places){
         free(places);
     }
     return NULL;
+}
+
+Trayecto *copylist(Trayecto *listp){
+    Trayecto *copylistp=NULL;
+    Trayecto *p=listp;
+    while(p!=NULL){
+        copylistp=AddTrayecto(copylistp,NuevoTrayecto(p->path));
+        p=p->next;
+    }
+    return copylistp;
 }
 
 Lugares *InsertLugar(Lugares *Map, Lugares *NewLugar){
