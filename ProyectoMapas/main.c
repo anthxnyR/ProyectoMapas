@@ -95,21 +95,17 @@ int LeerClima(char namefile[], Camino *path){
 
 Mapa *BuscarOptimo(Camino *path,char Origen[],char Destino[], Trayecto *tray, Mapa *Map){
     Camino *aux=path;
-    if(path==NULL) return;
+    if(path==NULL) return Map;
     for(;aux;aux=aux->Next){
+        if((aux->Peso[0]+aux->Peso[1]+aux->Peso[2])==0) return Map;
         if(strcmp(aux->Og->Name,Origen)==0){
             tray=AddTrayecto(tray,NuevoTrayecto(aux));
-            ImprimirTrayecto(tray);
             if(strcmp(aux->Ady->Name,Destino)==0){
                 Trayecto *ptr=copylist(tray);
-                ImprimirTrayecto(ptr);
                 Map=AddMapa(Map,NuevoMapa(ptr));
-                ImprimirMapas(Map);
             }
             else Map=BuscarOptimo(path,aux->Ady->Name,Destino,tray,Map);
             tray=DeleteLast(tray);
-            if (tray!=NULL)
-                ImprimirTrayecto(tray);
         }
     }
     return Map;
@@ -219,7 +215,8 @@ int StartApp(){
                 Trayecto *tray=NULL;
                 Mapa *Map=NULL;
                 Map=BuscarOptimo(path,Origen,Destino,tray,Map);
-                ImprimirMapas(Map);
+                Map=OrdenarMapa(Map);
+                ImpresionDosRutas(Map,Origen,Destino);
                 printf("\n");
                 getchar();
                 getchar( );
