@@ -120,7 +120,7 @@ int StartApp(){
     Lugares *places=NULL;
     Camino *path=NULL;
 
-    printf("*********BIENVENIDO A AYPII MAPS*********\n\n");
+    printf("\n      *********BIENVENIDO A AYPII MAPS*********\n\n");
     while(option!=3){
         printf("Ingrese la opcion que desee:\n\n");
         printf("[1] Agregar un Mapa\n");
@@ -139,7 +139,10 @@ int StartApp(){
                         archivo=fopen(namefile,"r");
                         if(archivo==NULL){
                             printf("\nARCHIVO NO ENCONTRADO!\n");
-                            return 0;
+                            getchar();
+                            getchar();
+                            system("clear");
+                            break;
                         }
                         else fclose(archivo);
                     }
@@ -185,7 +188,10 @@ int StartApp(){
                             archivo=fopen(nameclima,"r");
                             if(archivo==NULL){
                                 printf("\nARCHIVO NO ENCONTRADO!\n");
-                                return 0;
+                                getchar();
+                                getchar();
+                                system("clear");
+                                break;
                             }
                             else fclose(archivo);
                         }
@@ -196,9 +202,12 @@ int StartApp(){
                 }else if(toupper(option)=='N'){
                     getchar();
                 }
+                system("clear");
                 printf("\nDocumento agregado con exito!\n");
+                printf("\nLugares:\n");
                 ImprimirLugares(places);
                 printf("\n");
+                printf("\nRutas:\n");
                 ImprimirRuta(path);
                 printf("\nPulse Enter para continuar\n");
                 printf("\n");
@@ -207,26 +216,41 @@ int StartApp(){
                 break;
             case 2:
                 system("clear");
-                printf("Ingrese la ruta que desea consultar\n");
-                printf("Origen: ");
+                printf("Ingrese la ruta que desea consultar\n\n");
+                ImprimirLugares(places);
+                printf("\n\nOrigen > ");
                 scanf(" %s",Origen);
-                printf("Destino: ");
+                if(!Existe(Origen,places)){
+                    printf("\n***** EL LUGAR DE ORIGEN NO EXISTE *****\n");
+                    getchar();
+                    getchar();
+                    system("clear");
+                    break;
+                }
+                printf("Destino > ");
                 scanf(" %s",Destino);
+                if(Existe(Destino,places)==0){
+                    printf("\n***** EL LUGAR DE DESTINO NO EXISTE *****\n");
+                    getchar();
+                    getchar();
+                    system("clear");
+                    break;
+                }
                 Trayecto *tray=NULL;
                 Mapa *Map=NULL;
                 Map=BuscarOptimo(path,Origen,Destino,tray,Map);
                 Map=OrdenarMapa(Map);
                 ImpresionDosRutas(Map,Origen,Destino);
                 printf("\n");
+                printf("Presione Enter para continuar\n");
                 getchar();
-                getchar( );
                 system("clear");
                 break;
             case 3:
                 system("clear");
                 places=FreeLugares(places);
                 path=FreeCamino(path);
-                printf("   ***GRACIAS POR PREFERIRNOS***\nVuelva pronto y maneje con cuidado!\n\n");
+                printf("\n   ***GRACIAS POR PREFERIRNOS***\nVuelva pronto y maneje con cuidado!\n\n");
                 getchar( );
                 break;
         }

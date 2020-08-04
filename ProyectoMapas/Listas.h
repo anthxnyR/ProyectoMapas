@@ -100,6 +100,14 @@ Lugares *BuscarLugar(char str[], Lugares *Mapa){
     return NULL;
 }
 
+int Existe(char str[], Lugares *places){
+    while(places){
+        if(strcmp(places->Name,str)==0) return 1;
+        places=places->Next;
+    }
+    return 0;
+}
+
 Camino *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa,Camino *path){
     Camino *aux=path;
     Lugares *LOrigen, *LDestino;
