@@ -93,9 +93,10 @@ Camino *CaminoNuevo(char str[],float P, float B, float C){
 }
 
 Lugares *BuscarLugar(char str[], Lugares *Mapa){
-    while(Mapa){
-        if(strcmp(Mapa->Name,str)==0) return Mapa;
-        Mapa=Mapa->Next;
+    Lugares *aux=Mapa;
+    while(aux){
+        if(strcmp(aux->Name,str)==0) return aux;
+        aux=aux->Next;
     }
     return NULL;
 }
@@ -112,7 +113,15 @@ Camino *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa,
     Camino *aux=path;
     Lugares *LOrigen, *LDestino;
     LOrigen=BuscarLugar(Origen,Mapa);
+    if(!LOrigen){
+        printf("\n   ERROR EN: %s\nEL LUGAR NO EXISTE\n",Origen);
+        return NULL;
+    }
     LDestino=BuscarLugar(Destino,Mapa);
+    if(!LDestino){
+        printf("\n\t*** ERROR EN: %s ***\n\t  EL LUGAR NO EXISTE\n",Destino);
+        return NULL;
+    }
 
     if(aux==NULL){
         path=newCamino;
@@ -137,10 +146,11 @@ void DeleteChar(char str[],char const delim){
     return;
 }
 
-Camino *LeerRuta(char str[], Lugares *Mapa, Camino *path){
-    char Nombre[100],Origen[100],Dest[100],num;
-    char str_aux[100];
+Camino *LeerRuta(char ogstr[], Lugares *Mapa, Camino *path){
+    char Nombre[50],Origen[50],Dest[50],num;
+    char str_aux[100],str[100];
     float P,B,C;
+    strcpy(str,ogstr);
     strcpy(str_aux,str);
 
     strtok(str_aux,"->");
@@ -192,6 +202,7 @@ Camino *LeerRuta(char str[], Lugares *Mapa, Camino *path){
     }
 
     path=AddCamino(CaminoNuevo(Nombre,P,B,C),Origen,Dest,Mapa,path);
+    if(!path) return NULL;
     return path;
 
 }

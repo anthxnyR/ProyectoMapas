@@ -100,6 +100,7 @@ Mapa *BuscarOptimo(Camino *path,char Origen[],char Destino[], Trayecto *tray, Ma
         if((aux->Peso[0]+aux->Peso[1]+aux->Peso[2])==0) return Map;
         if(strcmp(aux->Og->Name,Origen)==0){
             tray=AddTrayecto(tray,NuevoTrayecto(aux));
+            printf("%s\n",aux->Ady->Name);
             if(strcmp(aux->Ady->Name,Destino)==0){
                 Trayecto *ptr=copylist(tray);
                 Map=AddMapa(Map,NuevoMapa(ptr));
@@ -115,17 +116,17 @@ int StartApp(){
     char namefile[100],Origen[50],Destino[50];
     int option;
     FILE *archivo=NULL;
-    int flag=2;
+    int flag=2,admitido=1;
     char str[100];
     Lugares *places=NULL;
     Camino *path=NULL;
 
-    printf("\n      *********BIENVENIDO A AYPII MAPS*********\n\n");
+    printf("\n\n\t\t*********BIENVENIDO A AYPII MAPS*********\n\n");
     while(option!=3){
         printf("Ingrese la opcion que desee:\n\n");
-        printf("[1] Agregar un Mapa\n");
-        printf("[2] Consultar una ruta\n");
-        printf("[3] Salir del Programa\n\n");
+        printf("\t[1] Agregar un Mapa\n");
+        printf("\t[2] Consultar una ruta\n");
+        printf("\t[3] Salir del Programa\n\n");
         scanf("  %i",&option);
         switch(option){
             case 1:
@@ -154,6 +155,7 @@ int StartApp(){
                     fgets(str,100,archivo);
                     RemoveBlanks(str);
                     if(strlen(str)>1){
+
                         if(strcmp(str,"Lugares")==0){
                             flag=1;
                         }
@@ -162,55 +164,72 @@ int StartApp(){
                         }
 
                         if(flag==1){
-                            if(strcmp(str,"Lugares")!=0 && strlen(str)>1)
-                            places=InsertLugar(places,LugarNuevo(str));
+                            if(VerificarTxt(str)){
+                                if(strcmp(str,"Lugares")!=0 && strlen(str)>1)
+                                places=InsertLugar(places,LugarNuevo(str));
+                            }else{
+                                system("clear");
+                                printf("\n     ERROR EN LUGAR: %s. \nSOLO SE ADMITEN CARACTERES ALFANUMERICOS Y '_' \n\n",str);
+                                places=FreeLugares(places);
+                                admitido=0;
+                                break;
+                            }
                         }
 
                         if(flag==0){
-                            if(strcmp(str,"Rutas")!=0 && strlen(str)>1)
+                            if(strcmp(str,"Rutas")!=0 && strlen(str)>1){
                                 path=LeerRuta(str,places,path);
+                                if(!path){
+                                    printf("EN LA SIGUIENTE ENTRADA: %s\n",str);
+                                    admitido=0;
+                                    break;
+                                }
+                            }
                         }
 
                     }
 
                 }
                 fclose(archivo);
-                char *option,nameclima[50];
-                printf("\nDesea ingresar un archivo de clima? (Y/N)\n");
-                scanf("\n%c",&option);
-                if(toupper(option)=='Y'){
-                    printf("Ingrese el archivo que desea leer\n");
-                    scanf("\n%s",nameclima);
-                    archivo=fopen(nameclima,"r");
-                    if(archivo==NULL){
-                        if(!strstr(nameclima,".txt")){
-                            strcat(nameclima,".txt");
-                            archivo=fopen(nameclima,"r");
-                            if(archivo==NULL){
-                                printf("\nARCHIVO NO ENCONTRADO!\n");
-                                getchar();
-                                getchar();
-                                system("clear");
-                                break;
+                if(admitido){
+                    char *option,nameclima[50];
+                    printf("\nDesea ingresar un archivo de clima? (Y/N)\n");
+                    scanf("\n%c",&option);
+                    if(toupper(option)=='Y'){
+                        printf("Ingrese el archivo que desea leer\n");
+                        scanf("\n%s",nameclima);
+                        archivo=fopen(nameclima,"r");
+                        if(archivo==NULL){
+                            if(!strstr(nameclima,".txt")){
+                                strcat(nameclima,".txt");
+                                archivo=fopen(nameclima,"r");
+                                if(archivo==NULL){
+                                    printf("\nARCHIVO NO ENCONTRADO!\n");
+                                    getchar();
+                                    getchar();
+                                    system("clear");
+                                    break;
+                                }
+                                else fclose(archivo);
                             }
-                            else fclose(archivo);
-                        }
 
+                        }
+                        LeerClima(nameclima,path);
+                        getchar();
+                    }else if(toupper(option)=='N'){
+                        getchar();
                     }
-                    LeerClima(nameclima,path);
-                    getchar();
-                }else if(toupper(option)=='N'){
-                    getchar();
+                    system("clear");
+                    printf("\nDocumento agregado con exito!\n");
+                    printf("\nLugares:\n");
+                    ImprimirLugares(places);
+                    printf("\n");
+                    printf("\nRutas:\n");
+                    ImprimirRuta(path);
                 }
-                system("clear");
-                printf("\nDocumento agregado con exito!\n");
-                printf("\nLugares:\n");
-                ImprimirLugares(places);
-                printf("\n");
-                printf("\nRutas:\n");
-                ImprimirRuta(path);
                 printf("\nPulse Enter para continuar\n");
                 printf("\n");
+                getchar();
                 getchar();
                 system("clear");
                 break;
@@ -250,7 +269,7 @@ int StartApp(){
                 system("clear");
                 places=FreeLugares(places);
                 path=FreeCamino(path);
-                printf("\n   ***GRACIAS POR PREFERIRNOS***\nVuelva pronto y maneje con cuidado!\n\n");
+                printf("\n\n\n\n\n\n\n\n\t\t***GRACIAS POR PREFERIRNOS***\n\t     Vuelva pronto y maneje con cuidado!\n\n\n\n\n\n\n\n");
                 getchar( );
                 break;
         }
