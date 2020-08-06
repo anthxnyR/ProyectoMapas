@@ -2,6 +2,8 @@
 #define JIC2_H_INCLUDED
 #include "Listas.h"
 
+// ************************ ESTRUCTURAS DEFINIDAS ************************
+
 typedef struct Trayecto{
     struct Camino *path;
     struct Trayecto *next;
@@ -24,6 +26,118 @@ typedef struct Camino{
     struct Lugares *Ady, *Og;
 }Camino;
 
+// ************************ FUNCIONES BASICAS DE LISTAS *****************************************
+
+//LUGARES
+Lugares *LugarNuevo(char str[]){
+    Lugares *NewLugar=(Lugares *)malloc(sizeof(Lugares));
+    if(NewLugar==NULL){
+        printf("ERROR EN MALLOC\n");
+        EXIT_FAILURE;
+    }else{
+        strcpy(NewLugar->Name,str);
+        NewLugar->Next=NULL;
+    }
+    return NewLugar;
+}
+
+Lugares *InsertLugar(Lugares *Map, Lugares *NewLugar){
+    Lugares *ptr;
+    if(Map==NULL) return NewLugar;
+    for(ptr=Map;ptr->Next;ptr=ptr->Next);
+    ptr->Next=NewLugar;
+    return Map;
+}
+
+Lugares *BuscarNodo(char str[], Lugares *Mapa){
+    Lugares *aux=Mapa;
+    while(aux){
+        if(strcmp(aux->Name,str)==0) return aux;
+        aux=aux->Next;
+    }
+    return NULL;
+}
+
+void ImprimirLugares(Lugares *Map){
+    while(Map!=NULL){
+        printf("%s\n",Map->Name);
+        Map=Map->Next;
+    }
+}
+
+Lugares *FreeLugares(Lugares *places){
+    Lugares *next;
+
+    for(;places;places=next){
+        next=places->Next;
+        free(places);
+    }
+    return NULL;
+}
+
+//CAMINO
+Camino *CaminoNuevo(char str[],float P, float B, float C){
+    Camino *newCamino=(Camino *)malloc(sizeof(Camino));
+    if(newCamino==NULL){
+        printf("ERROR EN MALLOC\n");
+        EXIT_FAILURE;
+    }
+
+    else{
+        strcpy(newCamino->Name,str);
+        newCamino->Peso[0]=P;
+        newCamino->Peso[1]=B;
+        newCamino->Peso[2]=C;
+        newCamino->Ady=NULL;
+        newCamino->Next=NULL;
+    }
+    return newCamino;
+}
+
+Camino *AddCamino(Camino *newCamino,char Origen[],char Destino[], Lugares *Mapa,Camino *path){
+    Camino *aux=path;
+    Lugares *LOrigen, *LDestino;
+    LOrigen=BuscarNodo(Origen,Mapa);
+    if(!LOrigen){
+        printf("\n   ERROR EN: %s\nEL LUGAR NO EXISTE\n",Origen);
+        return NULL;
+    }
+    LDestino=BuscarNodo(Destino,Mapa);
+    if(!LDestino){
+        printf("\n\t*** ERROR EN: %s ***\n\t  EL LUGAR NO EXISTE\n",Destino);
+        return NULL;
+    }
+
+    if(aux==NULL){
+        path=newCamino;
+    }else{
+        while(aux->Next) aux=aux->Next;
+        aux->Next=newCamino;
+    }
+
+    newCamino->Og=LOrigen;
+    newCamino->Ady=LDestino;
+    return path;
+
+}
+
+void ImprimirRuta(Camino *path){
+    while(path!=NULL){
+        printf("%s->%s:%s=P:%.1f;B:%.1f;C:%.1f\n",path->Name,path->Og->Name,path->Ady->Name,path->Peso[0],path->Peso[1],path->Peso[2]);
+        path=path->Next;
+    }
+}
+
+Camino *FreeCamino(Camino *path){
+    Camino *next;
+    for(;path;path=next){
+        next=path->Next;
+        free(path);
+    }
+    return NULL;
+}
+
+//TRAYECTO
 Trayecto *NuevoTrayecto(Camino *ruta){
     Trayecto *NewTray = (Trayecto *)malloc(sizeof(Trayecto));
     if(NewTray==NULL){
@@ -47,6 +161,16 @@ Trayecto *AddTrayecto(Trayecto *Tray,Trayecto *newTray){
  		return Tray;
 }
 
+Trayecto *copylist(Trayecto *listp){
+    Trayecto *copylistp=NULL;
+    Trayecto *p=listp;
+    while(p!=NULL){
+        copylistp=AddTrayecto(copylistp,NuevoTrayecto(p->path));
+        p=p->next;
+    }
+    return copylistp;
+}
+
 Trayecto *DeleteLast(Trayecto *Tray){
     if(!Tray) return Tray;
     if(!Tray->next){
@@ -64,6 +188,16 @@ Trayecto *DeleteLast(Trayecto *Tray){
     return Tray;
 }
 
+Trayecto *FreeTrayecto(Trayecto *tray){
+    Trayecto *next;
+    for(;tray;tray=next){
+        next=tray->next;
+        free(tray);
+    }
+    return NULL;
+}
+
+//MAPA
 Mapa *NuevoMapa(Trayecto *tray){
     Mapa *newMap = (Mapa *)malloc(sizeof(Mapa));
     if(newMap==NULL){
@@ -88,6 +222,19 @@ Mapa *AddMapa(Mapa *Map, Mapa *newMap){
  		return Map;
 }
 
+Mapa *FreeMapa(Mapa *Map){
+    Mapa *next;
+
+    for(;Map;Map=next){
+        next=Map->next;
+        free(Map);
+    }
+    return NULL;
+}
+
+// **************************FIN DE FUNCIONES BASICAS DE LISTAS  **************************
+
+//Verifica que si el trayecto es en su totalidad transitable
 int CheckPath(Trayecto *tray, int i){
     Trayecto *aux=tray;
     for(;aux;aux=aux->next)
@@ -96,21 +243,65 @@ int CheckPath(Trayecto *tray, int i){
     return 1;
 }
 
-int checklen(char str[]){
-    int cont=0;
-    for(int i=0;str[i]!='\0';i++)
-        cont++;
-    return cont;
+//Obtiene el peso Total de un trayecto entre dos puntos
+float PesoTotal(Trayecto *tray){
+    if(!tray) return 0;
+    Trayecto *aux=tray;
+    float suma=0;
+    while(aux){
+        suma+=(aux->path->Peso[0])+(aux->path->Peso[1])+(aux->path->Peso[2]);
+        aux=aux->next;
+    }
+    return suma;
 }
 
-int VerificarTxt(char str[]){
-    int len=checklen(str);
-    for(int i=0;i<len;i++)
-        if(!isalnum(str[i]) && str[i]!='_')
-            return 0;
-    return 1;
+//Ordena todas las rutas de Menor a Mayor, obteniendo las dos mas optimas de primeras.
+Mapa *OrdenarMapa(Mapa *Map){
+    if(!Map) return NULL;
+    for(;;){
+        int cambio = 0;
+        Mapa **linkp = &Map;
+        Mapa *curr = Map;
+        Mapa *nextnode;
+
+        while(nextnode=curr->next){
+            if(PesoTotal(curr->viaje)>PesoTotal(nextnode->viaje)){
+                curr->next=nextnode->next;
+                nextnode->next=curr;
+                *linkp=curr=nextnode;
+                cambio++;
+            }
+            linkp = &curr->next;
+            curr=nextnode;
+        }
+        if(cambio==0)
+            break;
+    }
+    return Map;
 }
 
+/*void Impresionmqm(Trayecto *tray){
+    if(!tray) return;
+    Trayecto *aux=tray;
+    while(aux){
+        printf("%s\n",aux->path->Name);
+        aux=aux->next;
+    }
+}
+
+void ImprimirMapa(Mapa *Map){
+    if(!Map) return;
+    int i=1;
+    Mapa *aux=Map;
+    while(aux){
+        printf("Ruta %d\n",i++);
+        Impresionmqm(aux->viaje);
+        aux=aux->next;
+        printf("\n");
+    }
+}*/
+
+//Imprime el trayecto con un formato dado
 void ImprimirTrayecto(Trayecto *Tray){
     Trayecto *aux;
     float acumulador=0,auxacum=0;
@@ -182,45 +373,7 @@ void ImprimirTrayecto(Trayecto *Tray){
     return;
 }
 
-float PesoTotal(Trayecto *tray){
-    if(!tray) return 0;
-    Trayecto *aux=tray;
-    float suma=0;
-    while(aux){
-        suma+=(aux->path->Peso[0])+(aux->path->Peso[1])+(aux->path->Peso[2]);
-        aux=aux->next;
-    }
-    return suma;
-}
-
-Mapa *OrdenarMapa(Mapa *Map){
-    if(!Map) return Map;
-    if(!Map->next) return Map;
-    float menor=0,comp=0;
-    Mapa *curr=Map,*aux,*prev;
-    int done=0;
-    while(curr){
-        curr=prev=Map;
-        while(curr && curr->next){
-            if(PesoTotal(curr->viaje)>PesoTotal(curr->next->viaje)){
-                aux=curr->next;
-                curr->next=curr->next->next;
-                aux->next=curr;
-                if(Map==curr)Map=prev=aux;
-                else{
-                    prev->next=aux;
-                    curr=aux;
-                }
-            }
-            prev=curr;
-            curr=curr->next;
-        }
-    }
-    return Map;
-}
-
-
-
+//Solo imprime las dos primeras rutas del mapa, en caso que no existan o falte alguna, avisa
 void ImpresionDosRutas(Mapa *Map,char Origen[],char Destino[]){
     if(!Map){
         system("clear");

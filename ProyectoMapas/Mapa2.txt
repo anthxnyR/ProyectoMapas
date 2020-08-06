@@ -7,6 +7,7 @@ Hotel
 UNEG
 UNEXPO
 Apartamento
+Micasita
 
 
 Rutas
@@ -14,7 +15,7 @@ Ruta_402 -> UCAB : Farmacia = P : 5.0 ; B : 2.5 ; C : 1.0
 Ruta_Pirineos -> Farmacia : Clinica = P: 1.0 ; B: 1.5 ; C: 0.5
 Ruta_Saltadilla -> Farmacia : Hotel = P: 2.0 ; B: 1.5 ; C: 0.5
 Ruta_B -> Clinica : UNEG = P : 3.0 ; B : 0.7 ; C : 1.5
-Ruta_C -> UNEG : UNEXPO = P : 1.5 ; B : 1.0 ; C : 1.6
+Ruta_AA -> UCAB:Micasita=P:0.4;B:0.2;C:0.9
+Ruta_malditasea -> Micasita : Apartamento = P: 0.0 ; B:1.0 ; C:0.6
 Ruta_D -> Hotel : Apartamento = P : 1.0 ; B : 0.5 ; C : 0.2
-Ruta_E -> Apartamento : UNEXPO = P : 3.0 ; B : 1.8 ; C : 2.0
 Ruta_F -> Farmacia : Apartamento = P: 2.5; B: 0.0 ; C: 1.0

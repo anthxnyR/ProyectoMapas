@@ -1,12 +1,12 @@
 # depslib dependency file v1.0
-1596605677 source:/home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/main.c
+1596693065 source:/home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	<ctype.h>
 	"Listas.h"
 
-1596605347 /home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/Listas.h
+1596693993 /home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/Listas.h
 	"JIC2.h"
 
 1596209428 source:/home/vicman/Documentos/Program2/ProyectoMapas/ProyectoMapas/main.c
@@ -28,6 +28,6 @@
 1596084266 /home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/JIC.h
 	"Listas.h"
 
-1596606094 /home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/JIC2.h
+1596693992 /home/anthony/Documents/ProgramII/Proyecto/ProyectoMapas/ProyectoMapas/JIC2.h
 	"Listas.h"
 

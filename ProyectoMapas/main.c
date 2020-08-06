@@ -4,37 +4,11 @@
 #include <ctype.h>
 #include "Listas.h"
 
-
-void RemoveBlanks (char *str){
-    char straux[strlen(str)];
-    int i=0,j=0;
-    while(str[i]!='\0'){
-        if(!(str[i]==' ')){
-            straux[j] = str[i];
-            j++;
-        }
-        i++;
-    }
-    if(straux[j-1]=='\n')
-        straux[j-1]='\0';
-    else straux[j]='\0';
-    strcpy(str,straux);
-}
-
-void CambioClima(Camino *path,float P,float B,float C,char name[]){
-    if(path==NULL) return;
-    for(;path;path=path->Next){
-        if(strcmp(path->Name,name)==0){
-            path->Peso[0]=path->Peso[0]*P;
-            path->Peso[1]=path->Peso[1]*B;
-            path->Peso[2]=path->Peso[2]*C;
-        }
-    }
-}
-
-int PasarClima(char str[], Camino *path){
-    char str_aux[100],nombre[100],num;
+//******************************** FUNCIONES QUE LEEN EL CLIMA Y ALMACENAN EN MEMORIA ********************
+int PasarClima(char ogstr[], Camino *path){
+    char str[100],str_aux[100],nombre[100],num;
     float P,B,C;
+    strcpy(str,ogstr);
     strcpy(str_aux,str);
 
     strtok(str_aux,"=");
@@ -75,7 +49,7 @@ int PasarClima(char str[], Camino *path){
         }
     }
     CambioClima(path,P,B,C,nombre);
-
+    return 1;
 }
 
 int LeerClima(char namefile[], Camino *path){
@@ -90,28 +64,32 @@ int LeerClima(char namefile[], Camino *path){
             PasarClima(str,path);
     }
     fclose(archivo);
-    return 0;
+    return 1;
 }
 
-Mapa *BuscarOptimo(Camino *path,char Origen[],char Destino[], Trayecto *tray, Mapa *Map){
+//******************************* FIN DE FUNCIONES DEL CLIMA ********************************
+
+
+//Busca todas las rutas posibles en el Mapa y las almacena en memoria
+Mapa *BuscarRutas(Camino *path,char Origen[],char Destino[], Trayecto *tray, Mapa *Map){
     Camino *aux=path;
     if(path==NULL) return Map;
     for(;aux;aux=aux->Next){
         if((aux->Peso[0]+aux->Peso[1]+aux->Peso[2])==0) return Map;
         if(strcmp(aux->Og->Name,Origen)==0){
             tray=AddTrayecto(tray,NuevoTrayecto(aux));
-            printf("%s\n",aux->Ady->Name);
             if(strcmp(aux->Ady->Name,Destino)==0){
                 Trayecto *ptr=copylist(tray);
                 Map=AddMapa(Map,NuevoMapa(ptr));
             }
-            else Map=BuscarOptimo(path,aux->Ady->Name,Destino,tray,Map);
+            else Map=BuscarRutas(path,aux->Ady->Name,Destino,tray,Map);
             tray=DeleteLast(tray);
         }
     }
     return Map;
 }
 
+//FUncion de Inicio del Menu
 int StartApp(){
     char namefile[100],Origen[50],Destino[50];
     int option;
@@ -181,6 +159,7 @@ int StartApp(){
                                 path=LeerRuta(str,places,path);
                                 if(!path){
                                     printf("EN LA SIGUIENTE ENTRADA: %s\n",str);
+                                    places=FreeLugares(places);
                                     admitido=0;
                                     break;
                                 }
@@ -214,10 +193,16 @@ int StartApp(){
                             }
 
                         }
-                        LeerClima(nameclima,path);
-                        getchar();
+                        if(!VerifyTxtClima(nameclima)){
+                            printf("\n\t\tEl clima no fue agregado!");
+                            getchar();
+                            getchar();
+                        }else{
+                            LeerClima(nameclima,path);
+                        }
                     }else if(toupper(option)=='N'){
                         getchar();
+
                     }
                     system("clear");
                     printf("\nDocumento agregado con exito!\n");
@@ -236,32 +221,38 @@ int StartApp(){
             case 2:
                 system("clear");
                 printf("Ingrese la ruta que desea consultar\n\n");
-                ImprimirLugares(places);
-                printf("\n\nOrigen > ");
-                scanf(" %s",Origen);
-                if(!Existe(Origen,places)){
-                    printf("\n***** EL LUGAR DE ORIGEN NO EXISTE *****\n");
-                    getchar();
-                    getchar();
-                    system("clear");
-                    break;
+                if(!places) printf("\n\n\n\n\t\tNO HAY NINGUN MAPA CARGADO\n\n\n\n");
+                else{
+                    ImprimirLugares(places);
+                    printf("\n\nOrigen > ");
+                    scanf(" %s",Origen);
+                    if(!Existe(Origen,places)){
+                        printf("\n***** EL LUGAR DE ORIGEN NO EXISTE *****\n");
+                        getchar();
+                        getchar();
+                        system("clear");
+                        break;
+                    }
+                    printf("Destino > ");
+                    scanf(" %s",Destino);
+                    if(Existe(Destino,places)==0){
+                        printf("\n***** EL LUGAR DE DESTINO NO EXISTE *****\n");
+                        getchar();
+                        getchar();
+                        system("clear");
+                        break;
+                    }
+                    Trayecto *tray=NULL;
+                    Mapa *Map=NULL;
+                    Map=BuscarRutas(path,Origen,Destino,tray,Map);
+                    Map=OrdenarMapa(Map);
+                    ImpresionDosRutas(Map,Origen,Destino);
+                    tray=FreeTrayecto(tray);
+                    Map=FreeMapa(Map);
                 }
-                printf("Destino > ");
-                scanf(" %s",Destino);
-                if(Existe(Destino,places)==0){
-                    printf("\n***** EL LUGAR DE DESTINO NO EXISTE *****\n");
-                    getchar();
-                    getchar();
-                    system("clear");
-                    break;
-                }
-                Trayecto *tray=NULL;
-                Mapa *Map=NULL;
-                Map=BuscarOptimo(path,Origen,Destino,tray,Map);
-                Map=OrdenarMapa(Map);
-                ImpresionDosRutas(Map,Origen,Destino);
                 printf("\n");
                 printf("Presione Enter para continuar\n");
+                getchar();
                 getchar();
                 system("clear");
                 break;
