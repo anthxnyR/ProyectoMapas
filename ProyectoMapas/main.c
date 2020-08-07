@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 #include "Listas.h"
 
 //******************************** FUNCIONES QUE LEEN EL CLIMA Y ALMACENAN EN MEMORIA ********************
@@ -93,6 +94,7 @@ Mapa *BuscarRutas(Camino *path,char Origen[],char Destino[], Trayecto *tray, Map
 int StartApp(){
     char namefile[100],Origen[50],Destino[50];
     int option;
+    char opt;
     FILE *archivo=NULL;
     int flag=2,admitido=1;
     char str[100];
@@ -173,37 +175,41 @@ int StartApp(){
                 if(admitido){
                     char *option,nameclima[50];
                     printf("\nDesea ingresar un archivo de clima? (Y/N)\n");
-                    scanf("\n%c",&option);
-                    if(toupper(option)=='Y'){
-                        printf("Ingrese el archivo que desea leer\n");
-                        scanf("\n%s",nameclima);
-                        archivo=fopen(nameclima,"r");
-                        if(archivo==NULL){
-                            if(!strstr(nameclima,".txt")){
-                                strcat(nameclima,".txt");
-                                archivo=fopen(nameclima,"r");
-                                if(archivo==NULL){
-                                    printf("\nARCHIVO NO ENCONTRADO!\n");
-                                    getchar();
-                                    getchar();
-                                    system("clear");
-                                    break;
+                    do{
+                        scanf("\n%c",&opt);
+						system("clear");
+                        if(toupper(opt)=='Y'){
+                            system("clear");
+                            printf("Ingrese el archivo que desea leer\n");
+                            scanf("\n%s",nameclima);
+                            archivo=fopen(nameclima,"r");
+                            if(archivo==NULL){
+                                if(!strstr(nameclima,".txt")){
+                                    strcat(nameclima,".txt");
+                                    archivo=fopen(nameclima,"r");
+                                    if(archivo==NULL){
+                                        printf("\nARCHIVO NO ENCONTRADO!\n");
+                                        getchar();
+                                        getchar();
+                                        system("clear");
+                                        break;
+                                    }
+                                    else fclose(archivo);
                                 }
-                                else fclose(archivo);
                             }
-
-                        }
-                        if(!VerifyTxtClima(nameclima)){
-                            printf("\n\t\tEl clima no fue agregado!");
+                            if(!VerifyTxtClima(nameclima)){
+                                printf("\n\t\tEl clima no fue agregado!");
+                                getchar();
+                                getchar();
+                            }else{
+                                LeerClima(nameclima,path);
+                            }
+                        }else if(toupper(opt)=='N'){
                             getchar();
-                            getchar();
-                        }else{
-                            LeerClima(nameclima,path);
-                        }
-                    }else if(toupper(option)=='N'){
-                        getchar();
-
-                    }
+                        }else if (toupper(opt)!='N' && toupper(opt)!='S'){
+                            printf("\n\n\t\tOPCION INVALIDA, VUELVA A INTENTARLO!\n\n");
+						}
+                    }while(toupper(opt)!='N' && toupper(opt)!='Y');
                     system("clear");
                     printf("\nDocumento agregado con exito!\n");
                     printf("\nLugares:\n");
@@ -268,5 +274,6 @@ int StartApp(){
 }
 
 int main(){
+    system("clear");
     StartApp();
 }

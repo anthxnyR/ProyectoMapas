@@ -28,6 +28,14 @@ int Existe(char str[], Lugares *places){
     return 0;
 }
 
+//Verifica la longitud de la cadena
+int checklen(char str[]){
+    int cont=0;
+    for(int i=0;str[i]!='\0';i++)
+        cont++;
+    return cont;
+}
+
 //Verifica si el Texto cumple con los caracteres debidos (alfanumericos y '_')
 int VerificarTxt(char str[]){
     int len=checklen(str);
@@ -37,13 +45,6 @@ int VerificarTxt(char str[]){
     return 1;
 }
 
-//Verifica la longitud de la cadena
-int checklen(char str[]){
-    int cont=0;
-    for(int i=0;str[i]!='\0';i++)
-        cont++;
-    return cont;
-}
 
 // ************************ VERIFICAR ENTRADA DE CLIMA ****************************
 
@@ -55,6 +56,51 @@ void CambioClima(Camino *path,float P,float B,float C,char name[]){
             path->Peso[1]=path->Peso[1]*B;
             path->Peso[2]=path->Peso[2]*C;
         }
+    }
+}
+
+void reversestr(char str[],int len){
+    int i=0,j=len-1,temp;
+    while(i<j){
+        temp=str[i];
+        str[i]=str[j];
+        str[j]=temp;
+        i++;
+        j--;
+    }
+}
+
+int intToStr(int x, char str[], int d){
+    int i=0;
+    while(x){
+        str[i++] = (x % 10) + '0';
+        x = x / 10;
+    }
+
+    while(i<d)
+        str[i++]='0';
+
+    reversestr(str,i);
+    str[i]='\0';
+    return i;
+}
+
+//Convertidor de float a string
+void ftoa(float n,char res[], int const punto){
+    int parteint = (int)n;
+    float partef = n - (float)parteint;
+    int i = intToStr(parteint,res,0);
+    if(punto !=0){
+        res[i]='.';
+        partef = partef * pow(10,punto);
+        intToStr((int)partef,res+i+1,punto);
+    }
+    if (res[0]=='.'){
+        char aux=res[1];
+        res[0]='0';
+        res[1]='.';
+        res[2]=aux;
+        res[3]='\0';
     }
 }
 
@@ -71,6 +117,37 @@ char MakeStringClima(char name[],float P,float B, float C,char stringcompare[]){
     ftoa(C,numaux,1);
     strcat(stringcompare,numaux);
     return *stringcompare;
+}
+
+int CheckCharClima(char str[]){
+    int semcol=0,col=0,eq=0;
+    for(int i=0;i<checklen(str);i++){
+        switch(str[i]){
+            case ';':
+                semcol++;
+                break;
+            case ':':
+                col++;
+                break;
+            case '=':
+                eq++;
+                break;
+        }
+    }
+    if(semcol==2 && col==3 && eq==1)
+            return 1;
+    else return 0;
+}
+
+//Funcion para eliminar una cadena hasta un caracter dado.
+void DeleteChar(char str[],char const delim){
+    int i;
+    for(i=0;str[i]!=delim;i++){
+        str[i]=' ';
+    }
+    str[i]=' ';
+    RemoveBlanks(str);
+    return;
 }
 
 int ObtainData(char ogstr[]){
@@ -124,26 +201,6 @@ int ObtainData(char ogstr[]){
     else return 0;
 }
 
-int CheckCharClima(char str[]){
-    int semcol=0,col=0,eq=0;
-    for(int i=0;i<checklen(str);i++){
-        switch(str[i]){
-            case ';':
-                semcol++;
-                break;
-            case ':':
-                col++;
-                break;
-            case '=':
-                eq++;
-                break;
-        }
-    }
-    if(semcol==2 && col==3 && eq==1)
-            return 1;
-    else return 0;
-}
-
 int VerifyTxtClima(char namefile[]){
     FILE *archivo=NULL;
     char str[100];
@@ -194,50 +251,6 @@ int CheckChars(char str[]){
     else return 0;
 }
 
-void reversestr(char str[],int len){
-    int i=0,j=len-1,temp;
-    while(i<j){
-        temp=str[i];
-        str[i]=str[j];
-        str[j]=temp;
-        i++;
-        j--;
-    }
-}
-
-int intToStr(int x, char str[], int d){
-    int i=0;
-    while(x){
-        str[i++] = (x % 10) + '0';
-        x = x / 10;
-    }
-
-    while(i<d)
-        str[i++]='0';
-
-    reversestr(str,i);
-    str[i]='\0';
-    return i;
-}
-
-//Convertidor de float a string
-void ftoa(float n,char res[], int const punto){
-    int parteint = (int)n;
-    float partef = n - (float)parteint;
-    int i = intToStr(parteint,res,0);
-    if(punto !=0){
-        res[i]='.';
-        partef = partef * pow(10,punto);
-        intToStr((int)partef,res+i+1,punto);
-    }
-    if (res[0]=='.'){
-        char aux=res[1];
-        res[0]='0';
-        res[1]='.';
-        res[2]=aux;
-        res[3]='\0';
-    }
-}
 
 //Esta funcion arma un formato adecuado que despues se comparara con el string dado
 char MakeString(char Name[],char Origen[],char Destino[],float P, float B, float C,char stringcompare[]){
@@ -257,17 +270,6 @@ char MakeString(char Name[],char Origen[],char Destino[],float P, float B, float
     ftoa(C,numaux,1);
     strcat(stringcompare,numaux);
     return *stringcompare;
-}
-
-//Funcion para eliminar una cadena hasta un caracter dado.
-void DeleteChar(char str[],char const delim){
-    int i;
-    for(i=0;str[i]!=delim;i++){
-        str[i]=' ';
-    }
-    str[i]=' ';
-    RemoveBlanks(str);
-    return;
 }
 
 //Lee la ruta y la Almacena en Memoria

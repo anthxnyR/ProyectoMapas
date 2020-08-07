@@ -248,8 +248,14 @@ float PesoTotal(Trayecto *tray){
     if(!tray) return 0;
     Trayecto *aux=tray;
     float suma=0;
+    int flagP,flagB,flagC;
+    flagP=CheckPath(aux,0);
+    flagB=CheckPath(aux,1);
+    flagC=CheckPath(aux,2);
     while(aux){
-        suma+=(aux->path->Peso[0])+(aux->path->Peso[1])+(aux->path->Peso[2]);
+        if(flagP) suma+=aux->path->Peso[0];
+        if(flagB) suma+=aux->path->Peso[1];
+        if(flagC) suma+=aux->path->Peso[2];
         aux=aux->next;
     }
     return suma;
