@@ -16,6 +16,7 @@ typedef struct Mapa{
 
 typedef struct Lugares{
     char Name[100];
+    int visited;
     struct Lugares *Next;
 }Lugares;
 
@@ -37,6 +38,7 @@ Lugares *LugarNuevo(char str[]){
     }else{
         strcpy(NewLugar->Name,str);
         NewLugar->Next=NULL;
+        NewLugar->visited=0;
     }
     return NewLugar;
 }
@@ -286,27 +288,6 @@ Mapa *OrdenarMapa(Mapa *Map){
     return Map;
 }
 
-/*void Impresionmqm(Trayecto *tray){
-    if(!tray) return;
-    Trayecto *aux=tray;
-    while(aux){
-        printf("%s\n",aux->path->Name);
-        aux=aux->next;
-    }
-}
-
-void ImprimirMapa(Mapa *Map){
-    if(!Map) return;
-    int i=1;
-    Mapa *aux=Map;
-    while(aux){
-        printf("Ruta %d\n",i++);
-        Impresionmqm(aux->viaje);
-        aux=aux->next;
-        printf("\n");
-    }
-}*/
-
 //Imprime el trayecto con un formato dado
 void ImprimirTrayecto(Trayecto *Tray){
     Trayecto *aux;
@@ -396,6 +377,7 @@ void ImpresionDosRutas(Mapa *Map,char Origen[],char Destino[]){
     getchar();
     getchar();
     if(aux){
+        system("clear");
         printf("\n\t\tSEGUNDA RUTA MAS OPTIMA DE ''%s'' A ''%s'': \n\n",Origen,Destino);
         ImprimirTrayecto(aux->viaje);
     }else{

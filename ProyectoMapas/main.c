@@ -78,13 +78,15 @@ Mapa *BuscarRutas(Camino *path,char Origen[],char Destino[], Trayecto *tray, Map
     for(;aux;aux=aux->Next){
         if((aux->Peso[0]+aux->Peso[1]+aux->Peso[2])==0) return Map;
         if(strcmp(aux->Og->Name,Origen)==0){
+            aux->Og->visited=1;
             tray=AddTrayecto(tray,NuevoTrayecto(aux));
             if(strcmp(aux->Ady->Name,Destino)==0){
                 Trayecto *ptr=copylist(tray);
                 Map=AddMapa(Map,NuevoMapa(ptr));
             }
-            else Map=BuscarRutas(path,aux->Ady->Name,Destino,tray,Map);
+            else if(aux->Ady->visited!=1) Map=BuscarRutas(path,aux->Ady->Name,Destino,tray,Map);
             tray=DeleteLast(tray);
+            aux->Og->visited=0;
         }
     }
     return Map;
@@ -110,6 +112,7 @@ int StartApp(){
         scanf("  %i",&option);
         switch(option){
             case 1:
+                admitido=1;
                 system("clear");
                 printf("\nIngrese el documento a agregar\n");
                 scanf("\n%s",namefile);
@@ -268,6 +271,7 @@ int StartApp(){
                 path=FreeCamino(path);
                 printf("\n\n\n\n\n\n\n\n\t\t***GRACIAS POR PREFERIRNOS***\n\t     Vuelva pronto y maneje con cuidado!\n\n\n\n\n\n\n\n");
                 getchar( );
+                getchar();
                 break;
         }
     }

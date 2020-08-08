@@ -59,63 +59,14 @@ void CambioClima(Camino *path,float P,float B,float C,char name[]){
     }
 }
 
-void reversestr(char str[],int len){
-    int i=0,j=len-1,temp;
-    while(i<j){
-        temp=str[i];
-        str[i]=str[j];
-        str[j]=temp;
-        i++;
-        j--;
-    }
-}
-
-int intToStr(int x, char str[], int d){
-    int i=0;
-    while(x){
-        str[i++] = (x % 10) + '0';
-        x = x / 10;
-    }
-
-    while(i<d)
-        str[i++]='0';
-
-    reversestr(str,i);
-    str[i]='\0';
-    return i;
-}
-
-//Convertidor de float a string
-void ftoa(float n,char res[], int const punto){
-    int parteint = (int)n;
-    float partef = n - (float)parteint;
-    int i = intToStr(parteint,res,0);
-    if(punto !=0){
-        res[i]='.';
-        partef = partef * pow(10,punto);
-        intToStr((int)partef,res+i+1,punto);
-    }
-    if (res[0]=='.'){
-        char aux=res[1];
-        res[0]='0';
-        res[1]='.';
-        res[2]=aux;
-        res[3]='\0';
-    }
-}
-
-char MakeStringClima(char name[],float P,float B, float C,char stringcompare[]){
-    char numaux[10];
+char MakeStringClima(char name[],char cP[6],char cB[6], char cC[6],char stringcompare[]){
     strcat(stringcompare,name);
     strcat(stringcompare,"=P:");
-    ftoa(P,numaux,1);
-    strcat(stringcompare,numaux);
+    strcat(stringcompare,cP);
     strcat(stringcompare,";B:");
-    ftoa(B,numaux,1);
-    strcat(stringcompare,numaux);
+    strcat(stringcompare,cB);
     strcat(stringcompare,";C:");
-    ftoa(C,numaux,1);
-    strcat(stringcompare,numaux);
+    strcat(stringcompare,cC);
     return *stringcompare;
 }
 
@@ -151,7 +102,7 @@ void DeleteChar(char str[],char const delim){
 }
 
 int ObtainData(char ogstr[]){
-    char str[100],str_aux[100],nombre[100],num,comp[100];
+    char str[100],str_aux[100],nombre[50],num,comp[100],cP[6],cB[6],cC[6];
     float P,B,C;
     if(!CheckCharClima(ogstr)) return 0;
     comp[0]='\0';
@@ -172,6 +123,7 @@ int ObtainData(char ogstr[]){
                 DeleteChar(str,':');
                 strcpy(str_aux,str);
                 strtok(str_aux,";");
+                strcpy(cP,str_aux);
                 P=atof(str_aux);
                 DeleteChar(str,';');
                 strcpy(str_aux,str);
@@ -182,6 +134,7 @@ int ObtainData(char ogstr[]){
                 DeleteChar(str,':');
                 strcpy(str_aux,str);
                 strtok(str_aux,";");
+                strcpy(cB,str_aux);
                 B=atof(str_aux);
                 DeleteChar(str,';');
                 strcpy(str_aux,str);
@@ -190,12 +143,13 @@ int ObtainData(char ogstr[]){
 
             case 'C':
                 DeleteChar(str,':');
+                strcpy(cC,str);
                 C=atof(str);
                 i++;
                 break;
         }
     }
-    MakeStringClima(nombre,P,B,C,comp);
+    MakeStringClima(nombre,cP,cB,cC,comp);
     if(strcasecmp(ogstr,comp)==0)
         return 1;
     else return 0;
@@ -253,28 +207,24 @@ int CheckChars(char str[]){
 
 
 //Esta funcion arma un formato adecuado que despues se comparara con el string dado
-char MakeString(char Name[],char Origen[],char Destino[],float P, float B, float C,char stringcompare[]){
-    char numaux[10];
+char MakeString(char Name[],char Origen[],char Destino[],char cP[6], char cB[6], char cC[6],char stringcompare[]){
     strcat(stringcompare,Name);
     strcat(stringcompare,"->");
     strcat(stringcompare,Origen);
     strcat(stringcompare,":");
     strcat(stringcompare,Destino);
     strcat(stringcompare,"=P:");
-    ftoa(P,numaux,1);
-    strcat(stringcompare,numaux);
+    strcat(stringcompare,cP);
     strcat(stringcompare,";B:");
-    ftoa(B,numaux,1);
-    strcat(stringcompare,numaux);
+    strcat(stringcompare,cB);
     strcat(stringcompare,";C:");
-    ftoa(C,numaux,1);
-    strcat(stringcompare,numaux);
+    strcat(stringcompare,cC);
     return *stringcompare;
 }
 
 //Lee la ruta y la Almacena en Memoria
 Camino *LeerRuta(char ogstr[], Lugares *Mapa, Camino *path){
-    char Nombre[50],Origen[50],Dest[50],num;
+    char Nombre[50],Origen[50],Dest[50],num,cP[6],cB[6],cC[6];
     char str_aux[100],str[100],comp[100];
     float P,B,C;
     comp[0]='\0';
@@ -309,6 +259,7 @@ Camino *LeerRuta(char ogstr[], Lugares *Mapa, Camino *path){
                 DeleteChar(str,':');
                 strcpy(str_aux,str);
                 strtok(str_aux,";");
+                strcpy(cP,str_aux);
                 P=atof(str_aux);
                 DeleteChar(str,';');
                 strcpy(str_aux,str);
@@ -319,6 +270,7 @@ Camino *LeerRuta(char ogstr[], Lugares *Mapa, Camino *path){
                 DeleteChar(str,':');
                 strcpy(str_aux,str);
                 strtok(str_aux,";");
+                strcpy(cB,str_aux);
                 B=atof(str_aux);
                 DeleteChar(str,';');
                 strcpy(str_aux,str);
@@ -327,12 +279,13 @@ Camino *LeerRuta(char ogstr[], Lugares *Mapa, Camino *path){
 
             case 'C':
                 DeleteChar(str,':');
+                strcpy(cC,str);
                 C=atof(str);
                 i++;
                 break;
         }
     }
-    MakeString(Nombre,Origen,Dest,P,B,C,comp);
+    MakeString(Nombre,Origen,Dest,cP,cB,cC,comp);
     if(strcmp(comp,ogstr)!=0){
         printf("\n\t\tERROR: FORMATO NO VALIDO!\n");
         return NULL;
