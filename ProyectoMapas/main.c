@@ -254,13 +254,23 @@ int StartApp(){
                     Trayecto *tray=NULL;
                     Mapa *Map=NULL;
                     Map=BuscarRutas(path,Origen,Destino,tray,Map);
-                    Map=OrdenarMapa(Map);
-                    ImpresionDosRutas(Map,Origen,Destino);
+                    Map=OrdenarMapa(Map,0);
+                    ImpresionDosRutas(Map,Origen,Destino,0);
+                    printf("\n\n\t\tPresione Enter para continuar.\n");
+                    getchar();
+                    getchar();
+                    Map=OrdenarMapa(Map,1);
+                    ImpresionDosRutas(Map,Origen,Destino,1);
+                    printf("\n\n\t\tPresione Enter para continuar.\n");
+                    getchar();
+                    getchar();
+                    Map=OrdenarMapa(Map,2);
+                    ImpresionDosRutas(Map,Origen,Destino,2);
                     tray=FreeTrayecto(tray);
                     Map=FreeMapa(Map);
                 }
                 printf("\n");
-                printf("Presione Enter para continuar\n");
+                printf("\t\tPresione Enter para continuar.\n");
                 getchar();
                 getchar();
                 system("clear");

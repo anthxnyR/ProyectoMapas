@@ -237,34 +237,32 @@ Mapa *FreeMapa(Mapa *Map){
 // **************************FIN DE FUNCIONES BASICAS DE LISTAS  **************************
 
 //Verifica que si el trayecto es en su totalidad transitable
-int CheckPath(Trayecto *tray, int i){
+int CheckPath(Trayecto *tray, int idx){
     Trayecto *aux=tray;
     for(;aux;aux=aux->next)
-        if(aux->path->Peso[i]==0)
+        if(aux->path->Peso[idx]==0)
             return 0;
     return 1;
 }
 
 //Obtiene el peso Total de un trayecto entre dos puntos
-float PesoTotal(Trayecto *tray){
+float PesoTotal(Trayecto *tray,int idx){
     if(!tray) return 0;
     Trayecto *aux=tray;
     float suma=0;
-    int flagP,flagB,flagC;
-    flagP=CheckPath(aux,0);
-    flagB=CheckPath(aux,1);
-    flagC=CheckPath(aux,2);
+    int flag;
+    flag=CheckPath(aux,idx);
     while(aux){
-        if(flagP) suma+=aux->path->Peso[0];
-        if(flagB) suma+=aux->path->Peso[1];
-        if(flagC) suma+=aux->path->Peso[2];
+        if(flag) suma+=aux->path->Peso[idx];
+        else return suma;
         aux=aux->next;
     }
+
     return suma;
 }
 
 //Ordena todas las rutas de Menor a Mayor, obteniendo las dos mas optimas de primeras.
-Mapa *OrdenarMapa(Mapa *Map){
+Mapa *OrdenarMapa(Mapa *Map,int idx){
     if(!Map) return NULL;
     for(;;){
         int cambio = 0;
@@ -273,7 +271,7 @@ Mapa *OrdenarMapa(Mapa *Map){
         Mapa *nextnode;
 
         while(nextnode=curr->next){
-            if(PesoTotal(curr->viaje)>PesoTotal(nextnode->viaje)){
+            if(PesoTotal(curr->viaje,idx)>PesoTotal(nextnode->viaje,idx)){
                 curr->next=nextnode->next;
                 nextnode->next=curr;
                 *linkp=curr=nextnode;
@@ -289,20 +287,19 @@ Mapa *OrdenarMapa(Mapa *Map){
 }
 
 //Imprime el trayecto con un formato dado
-void ImprimirTrayecto(Trayecto *Tray){
+void ImprimirTrayecto(Trayecto *Tray,int idx){
     Trayecto *aux;
     float acumulador=0,auxacum=0;
-    int i=0;
-    switch (i){
+    switch (idx){
         case 0:
             aux=Tray;
             printf("Ruta a Pie:\n");
             printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
-            if(CheckPath(aux,i)){
+            if(CheckPath(aux,idx)){
                 while(aux){
-                    printf("%s -> %s  \t\t  Tiempo: %.1f  \t\t  A traves de %s",aux->path->Og->Name,aux->path->Ady->Name,aux->path->Peso[i],aux->path->Name);
+                    printf("%s -> %s  \t\t  Tiempo: %.1f  \t\t  A traves de %s",aux->path->Og->Name,aux->path->Ady->Name,aux->path->Peso[idx],aux->path->Name);
                     printf("\n");
-                    acumulador+=aux->path->Peso[i];
+                    acumulador+=aux->path->Peso[idx];
                     aux=aux->next;
                 }
                 printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
@@ -312,18 +309,18 @@ void ImprimirTrayecto(Trayecto *Tray){
                 printf("\t\tNo existe un camino a Pie!\n");
                 printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n\n\n");
             }
-            i++;
+            break;
 
         case 1:
             acumulador=0;
             aux=Tray;
             printf("Ruta a Autobus:\n");
             printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
-            if(CheckPath(aux,i)){
+            if(CheckPath(aux,idx)){
                 while(aux){
-                    printf("%s -> %s  \t\t  Tiempo: %.1f  \t\t  A traves de %s",aux->path->Og->Name,aux->path->Ady->Name,aux->path->Peso[i],aux->path->Name);
+                    printf("%s -> %s  \t\t  Tiempo: %.1f  \t\t  A traves de %s",aux->path->Og->Name,aux->path->Ady->Name,aux->path->Peso[idx],aux->path->Name);
                     printf("\n");
-                    acumulador+=aux->path->Peso[i];
+                    acumulador+=aux->path->Peso[idx];
                     aux=aux->next;
                 }
                 printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
@@ -333,18 +330,18 @@ void ImprimirTrayecto(Trayecto *Tray){
                 printf("\t\tNo existe un camino por Autobus!\n");
                 printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n\n\n");
             }
-            i++;
+            break;
 
         case 2:
             acumulador=0;
             aux=Tray;
             printf("Ruta a Carro:\n");
             printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
-            if(CheckPath(aux,i)){
+            if(CheckPath(aux,idx)){
                 while(aux){
-                    printf("%s -> %s  \t\t  Tiempo: %.1f  \t\t  A traves de %s",aux->path->Og->Name,aux->path->Ady->Name,aux->path->Peso[i],aux->path->Name);
+                    printf("%s -> %s  \t\t  Tiempo: %.1f  \t\t  A traves de %s",aux->path->Og->Name,aux->path->Ady->Name,aux->path->Peso[idx],aux->path->Name);
                     printf("\n");
-                    acumulador+=aux->path->Peso[i];
+                    acumulador+=aux->path->Peso[idx];
                     aux=aux->next;
                 }
                 printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
@@ -354,38 +351,69 @@ void ImprimirTrayecto(Trayecto *Tray){
                 printf("\t\tNo existe un camino por Carro!\n");
                 printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n\n\n");
             }
-            i++;
+            break;
     }
-    printf("COSTO TOTAL: %.1f\n\n\n\n",auxacum);
+    //printf("COSTO TOTAL: %.1f\n\n\n\n",auxacum);
     return;
 }
 
+void Impresionmqm(Trayecto *tray){
+    if(!tray) return;
+    Trayecto *aux=tray;
+    while(aux){
+        printf("%s\n",aux->path->Name);
+        aux=aux->next;
+    }
+}
+
+void ImprimirMapa(Mapa *Map){
+    if(!Map) return;
+    int i=1;
+    Mapa *aux=Map;
+    while(aux){
+        printf("Ruta %d\n",i++);
+        Impresionmqm(aux->viaje);
+        aux=aux->next;
+        printf("\n");
+    }
+}
+
 //Solo imprime las dos primeras rutas del mapa, en caso que no existan o falte alguna, avisa
-void ImpresionDosRutas(Mapa *Map,char Origen[],char Destino[]){
+void ImpresionDosRutas(Mapa *Map,char Origen[],char Destino[],int idx){
     if(!Map){
         system("clear");
         printf("\n\n** NO EXISTEN RUTAS PARA ESTE VIAJE **\n");
         getchar();
         return;
     }
+    char *typepath[3];
+    typepath[0]="PIE";
+    typepath[1]="AUTOBUS";
+    typepath[2]="CARRO";
     Mapa *aux=Map;
-    system("clear");
-    printf("\n\t\tRUTA MAS OPTIMA DE ''%s'' A ''%s'': \n\n",Origen,Destino);
-    ImprimirTrayecto(aux->viaje);
+    while(aux){
+        if(CheckPath(aux->viaje,idx)){
+            system("clear");
+            printf("\n\t\tRUTA MAS OPTIMA A %s DE ''%s'' A ''%s'': \n\n",typepath[idx],Origen,Destino);
+            ImprimirTrayecto(aux->viaje,idx);
+            break;
+        }
+        else aux=aux->next;
+    }
+    if(!aux){
+        system("clear");
+        printf("\n\n** NO EXISTEN RUTAS PARA A %s ESTE VIAJE **\n",typepath[idx]);
+        return;
+    }
     aux=aux->next;
-    printf("\nPresione Enter para continuar");
-    getchar();
-    getchar();
-    if(aux){
-        system("clear");
-        printf("\n\t\tSEGUNDA RUTA MAS OPTIMA DE ''%s'' A ''%s'': \n\n",Origen,Destino);
-        ImprimirTrayecto(aux->viaje);
-    }else{
-        system("clear");
-        printf("\n\n** NO EXISTE UNA SEGUNDA RUTA OPTIMA **\n");
+    while(aux){
+        if(CheckPath(aux->viaje,idx)){
+            printf("\n\t\tSEGUNDA RUTA A %s MAS OPTIMA DE ''%s'' A ''%s'': \n\n",typepath[idx],Origen,Destino);
+            ImprimirTrayecto(aux->viaje,idx);
+            break;
+        }
+        else aux=aux->next;
     }
     return;
-
-
 }
 #endif // JIC2_H_INCLUDED
